@@ -95,12 +95,21 @@ export default function PartsCorner() {
     setLoading(true);
     try {
       const response = await fetch("/api/items");
+      if (!response.ok) {
+        throw new Error("Failed to fetch items");
+      }
       const data = await response.json();
-      setItems(data);
-      toast({
-        title: "Data loaded successfully",
-        description: `${data.length} items retrieved from database`,
-      });
+      
+      if (Array.isArray(data)) {
+        setItems(data);
+        toast({
+          title: "Data loaded successfully",
+          description: `${data.length} items retrieved from database`,
+        });
+      } else {
+        setItems([]);
+        console.error("API returned invalid data format:", data);
+      }
     } catch (error) {
       console.error("Error fetching items:", error);
       toast({
